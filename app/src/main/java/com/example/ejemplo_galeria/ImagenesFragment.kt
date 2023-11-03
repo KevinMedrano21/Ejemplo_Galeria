@@ -19,6 +19,9 @@ import android.widget.Spinner
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.chip.Chip
 
+
+
+
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
@@ -36,10 +39,9 @@ class ImagenesFragment : Fragment() {
 
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var imageView: ImageView // Agregar esta línea
-
-
     private val REQUEST_IMAGE_PICK = 100
     private var selectedImageUri: Uri? = null
+    private lateinit var selectedAlbumName:String
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -48,8 +50,7 @@ class ImagenesFragment : Fragment() {
             // Se seleccionó una imagen de la galería
             selectedImageUri = data?.data
             imageView.setImageURI(selectedImageUri)
-            // Puedes mostrar la imagen en el ImageView si es necesario
-            // imageView.setImageURI(selectedImageUri)
+
         }
     }
 
@@ -83,7 +84,7 @@ class ImagenesFragment : Fragment() {
 
         spinnerImagenes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedAlbumName = albumNames[position]
+                selectedAlbumName = albumNames[position]
 
             }
 
@@ -113,10 +114,9 @@ class ImagenesFragment : Fragment() {
                 val description = editText.text.toString() // Obtén la descripción
                 val selectedUri = selectedImageUri
 
-                if (selectedUri != null) {
+                if (selectedUri != null && selectedAlbumName.isNotEmpty()) {
                     // Si se seleccionó una imagen, guárdala en la base de datos
-                    val imageStream =
-                        requireContext().contentResolver.openInputStream(selectedUri)
+                    val imageStream = requireContext().contentResolver.openInputStream(selectedUri)
                     if (imageStream != null) {
                         val imageBytes = imageStream.readBytes()
                         val imagen = DatabaseHelper.Imagen(0, albumName, imageBytes, description)

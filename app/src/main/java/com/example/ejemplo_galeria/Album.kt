@@ -8,7 +8,11 @@ import android.provider.BaseColumns
 
 data class Album (val id : Long, val nombre: String)
 
+
+
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+    data class Imagen(val id: Long, val albumName: String, val image: ByteArray, val description: String?)
 
     override fun onCreate(db: SQLiteDatabase) {
         val createAlbumsTable = "CREATE TABLE ${AlbumEntry.TABLE_NAME} (" +
@@ -38,23 +42,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
     }
 
-    companion object {
-        const val DATABASE_NAME = "MyGallery.db"
-        const val DATABASE_VERSION = 1
-    }
-
-    object AlbumEntry : BaseColumns {
-        const val TABLE_NAME = "album"
-        const val _ID = BaseColumns._ID
-        const val COLUMN_NAME = "name"
-    }
-
-    object ImagenEntry : BaseColumns {
-        const val TABLE_NAME = "imagenes"
-        const val _ID = BaseColumns._ID
-        const val COLUMN_ALBUM_NAME = "album_name"
-        const val COLUMN_IMAGE = "image"
-        const val COLUMN_DESCRIPTION = "description"
+    fun insertImagen(imagen: Imagen) {
+        val db = writableDatabase
+        val values = ContentValues()
+        values.put(ImagenEntry.COLUMN_ALBUM_NAME, imagen.albumName)
+        values.put(ImagenEntry.COLUMN_IMAGE, imagen.image)
+        values.put(ImagenEntry.COLUMN_DESCRIPTION, imagen.description)
+        db.insert(ImagenEntry.TABLE_NAME, null, values)
+        db.close()
     }
 
     fun getAllAlbums(): List<Album> {
@@ -84,21 +79,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return albumList
     }
 
-
-
-
-    data class Imagen(val id: Long, val albumName: String, val image: ByteArray, val description: String?)
-
-    fun insertImagen(imagen: Imagen) {
-        val db = writableDatabase
-        val values = ContentValues()
-        values.put(ImagenEntry.COLUMN_ALBUM_NAME, imagen.albumName)
-        values.put(ImagenEntry.COLUMN_IMAGE, imagen.image)
-        values.put(ImagenEntry.COLUMN_DESCRIPTION, imagen.description)
-        db.insert(ImagenEntry.TABLE_NAME, null, values)
-        db.close()
-    }
-
     fun getImagenesByAlbum(albumName: String): List<Imagen> {
         val imagenes = mutableListOf<Imagen>()
         val db = readableDatabase
@@ -126,4 +106,25 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return imagenes
     }
+
+
+    companion object {
+        const val DATABASE_NAME = "MyGallery.db"
+        const val DATABASE_VERSION = 1
+    }
+
+    object AlbumEntry : BaseColumns {
+        const val TABLE_NAME = "album"
+        const val _ID = BaseColumns._ID
+        const val COLUMN_NAME = "name"
+    }
+
+    object ImagenEntry : BaseColumns {
+        const val TABLE_NAME = "imagenes"
+        const val _ID = BaseColumns._ID
+        const val COLUMN_ALBUM_NAME = "album_name"
+        const val COLUMN_IMAGE = "image"
+        const val COLUMN_DESCRIPTION = "description"
+    }
+
 }
