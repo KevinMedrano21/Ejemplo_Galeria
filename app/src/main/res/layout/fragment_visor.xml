@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:orientation="vertical"
+             tools:context=".VisorFragment">
+
+
+    <ImageView
+            android:layout_width="290dp"
+            android:layout_height="250dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="30dp"/>
+
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="100dp"
+            android:src="@mipmap/derecha"
+        />
+
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginStart="363dp"
+            android:src="@mipmap/izquierda"
+        />
+
+    <TextView
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="280dp"
+            android:layout_marginStart="40dp"
+            android:text="Descripcion"
+            android:textAlignment="center"
+            android:textSize="15sp"/>
+
+    <Spinner
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="300dp"
+            android:layout_marginStart="60dp"
+            android:text="Descripcion"
+            android:textAlignment="center"
+    />
+
+</FrameLayout>
