@@ -2,6 +2,7 @@ package com.example.ejemplo_galeria
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +32,7 @@ class VisorFragment : Fragment() {
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var currentAlbumName: String
     private lateinit var imageView: ImageView
-    private lateinit var descriptionTextView : TextView
+    private lateinit var descriptionTextView: TextView
     private lateinit var albums: List<Album>
     private var currentAlbumIndex = 0
     private var currentImageIndex = 0
@@ -50,62 +51,72 @@ class VisorFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-            val view = inflater.inflate(R.layout.fragment_visor, container, false)
+        val view = inflater.inflate(R.layout.fragment_visor, container, false)
 
-            dbHelper = DatabaseHelper(requireContext())
-            imageView = view.findViewById(R.id.imageView)
-            descriptionTextView = view.findViewById(R.id.descripcionTextView)
-            val spinner = view.findViewById<Spinner>(R.id.spinner)
-            val buttonDerecha = view.findViewById<ImageButton>(R.id.buttonDerecha)
-            val buttonIzquierda = view.findViewById<ImageButton>(R.id.buttonIzquierda)
+        dbHelper = DatabaseHelper(requireContext())
+        imageView = view.findViewById(R.id.imageView)
+        descriptionTextView = view.findViewById(R.id.descripcionTextView)
+        val spinner = view.findViewById<Spinner>(R.id.spinner)
+        val buttonDerecha = view.findViewById<ImageButton>(R.id.buttonDerecha)
+        val buttonIzquierda = view.findViewById<ImageButton>(R.id.buttonIzquierda)
 
-            albums = dbHelper.getAllAlbums()
-            val albumNames = albums.map { it.nombre }
-            val adapter =
-                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, albumNames)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
+        albums = dbHelper.getAllAlbums()
+        val albumNames = albums.map { it.nombre }
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, albumNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
 
-            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    currentAlbumName = albumNames[position]
-                    currentImageIndex = 0
-                    mostrarImagenActual()
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-
-                }
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                currentAlbumName = albumNames[position]
+                Log.d("VisorFragment", "Album seleccionado: $currentAlbumName")
+                currentImageIndex = 0
+                mostrarImagenActual()
             }
 
-            buttonDerecha.setOnClickListener {
-                val imagenes = dbHelper.getImagenesByAlbum(currentAlbumName)
-                if (currentImageIndex < imagenes.size - 1) {
-                    currentImageIndex++
-                    mostrarImagenActual()
-                }
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+        }
+
+        buttonDerecha.setOnClickListener {
+            val imagenes = dbHelper.getImagenesByAlbum(currentAlbumName)
+            if (currentImageIndex < imagenes.size - 1) {
+                currentImageIndex++
+                mostrarImagenActual()
+            }
+        }
+
+        buttonIzquierda.setOnClickListener {
+            val imagenes = dbHelper.getImagenesByAlbum(currentAlbumName)
+            if (currentImageIndex > 0) {
+                currentImageIndex--
+                mostrarImagenActual()
             }
 
-            buttonIzquierda.setOnClickListener {
-                val imagenes = dbHelper.getImagenesByAlbum(currentAlbumName)
-                if (currentImageIndex > 0) {
-                    currentImageIndex--
-                    mostrarImagenActual()
-                }
-            }
+        }
         return view
     }
 
+
+
+
+    //hasme una funcion que consulte las imagenes, con su descripcion y su album y que las muestre en el visor y que se pueda pasar de una imagen a otra con los botones y que se pueda seleccionar el album con el spinner
+
+
+
     private fun mostrarImagenActual() {
+        Log.d("VisorFragment", "Álbum seleccionado: $currentAlbumName")
         val imagenes = dbHelper.getImagenesByAlbum(currentAlbumName)
 
         if (imagenes.isNotEmpty() && currentImageIndex in 0 until imagenes.size) {
             val imagen = imagenes[currentImageIndex]
+            Log.d("VisorFragment", "Imagen ID: ${imagen.id}" )
             val imageBytes = imagen.image
             val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
             imageView.setImageBitmap(bitmap)

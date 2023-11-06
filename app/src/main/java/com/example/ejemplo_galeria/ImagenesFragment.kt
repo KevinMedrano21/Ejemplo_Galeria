@@ -2,7 +2,6 @@ package com.example.ejemplo_galeria
 
 import android.app.Activity
 import android.content.Intent
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,6 +17,8 @@ import android.widget.ImageView
 import android.widget.Spinner
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.chip.Chip
+
+
 
 
 
@@ -56,11 +57,6 @@ class ImagenesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-
         dbHelper = DatabaseHelper(requireContext())
     }
 
@@ -110,11 +106,11 @@ class ImagenesFragment : Fragment() {
 
         // Manejar el evento de hacer clic en el botón "GUARDAR" para guardar la imagen y descripción
         buttonGuardar.setOnClickListener {
-                val albumName = chipAlbum.text.toString() // Obtén el nombre del álbum seleccionado
+                val albumName = selectedAlbumName// Obtén el nombre del álbum seleccionado
                 val description = editText.text.toString() // Obtén la descripción
                 val selectedUri = selectedImageUri
 
-                if (selectedUri != null && selectedAlbumName.isNotEmpty()) {
+                if (selectedUri != null && albumName.isNotEmpty()) {
                     // Si se seleccionó una imagen, guárdala en la base de datos
                     val imageStream = requireContext().contentResolver.openInputStream(selectedUri)
                     if (imageStream != null) {

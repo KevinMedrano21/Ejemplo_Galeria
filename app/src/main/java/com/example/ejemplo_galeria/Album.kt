@@ -6,13 +6,14 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
 
-data class Album (val id : Long, val nombre: String)
 
+data class Album (val id : Long, val nombre: String)
 
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
-    data class Imagen(val id: Long, val albumName: String, val image: ByteArray, val description: String?)
+
+    data class Imagen(val id: Long, val albumId: String, val image: ByteArray, val description: String?)
 
     override fun onCreate(db: SQLiteDatabase) {
         val createAlbumsTable = "CREATE TABLE ${AlbumEntry.TABLE_NAME} (" +
@@ -24,6 +25,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 "${ImagenEntry.COLUMN_ALBUM_NAME} TEXT NOT NULL," +
                 "${ImagenEntry.COLUMN_IMAGE} BLOB NOT NULL," +
                 "${ImagenEntry.COLUMN_DESCRIPTION} TEXT);"
+
+
 
 
         db.execSQL(createImagenesTable)
@@ -45,7 +48,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     fun insertImagen(imagen: Imagen) {
         val db = writableDatabase
         val values = ContentValues()
-        values.put(ImagenEntry.COLUMN_ALBUM_NAME, imagen.albumName)
+        values.put(ImagenEntry.COLUMN_ALBUM_NAME, imagen.albumId)
         values.put(ImagenEntry.COLUMN_IMAGE, imagen.image)
         values.put(ImagenEntry.COLUMN_DESCRIPTION, imagen.description)
         db.insert(ImagenEntry.TABLE_NAME, null, values)
@@ -79,14 +82,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return albumList
     }
 
-    fun getImagenesByAlbum(albumName: String): List<Imagen> {
+    fun getImagenesByAlbum(albumId: String): List<Imagen> {
         val imagenes = mutableListOf<Imagen>()
         val db = readableDatabase
         val cursor = db.query(
             ImagenEntry.TABLE_NAME,
             null,
             "${ImagenEntry.COLUMN_ALBUM_NAME} = ?",
-            arrayOf(albumName),
+            arrayOf(albumId.toString()),
             null,
             null,
             null
@@ -97,7 +100,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val id = cursor.getLong(cursor.getColumnIndex(ImagenEntry._ID))
                 val image = cursor.getBlob(cursor.getColumnIndex(ImagenEntry.COLUMN_IMAGE))
                 val description = cursor.getString(cursor.getColumnIndex(ImagenEntry.COLUMN_DESCRIPTION))
-                val imagen = Imagen(id, albumName, image, description)
+                val imagen = Imagen(id, albumId, image, description)
                 imagenes.add(imagen)
             } while (cursor.moveToNext())
         }
